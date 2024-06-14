@@ -11,20 +11,67 @@ if (isset($_SESSION['login'])) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Register Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
-            background:url('https://p4.wallpaperbetter.com/wallpaper/791/210/336/window-instrumento-workshop-wallpaper-preview.jpg')no-repeat center center fixed;
+            background: #003333;
             background-size:cover;
-            background-color: #2c3e50;
+            background-color: #003333;
             color: #ecf0f1;
+
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+
+            font-family: 'Poppins', sans-serif;
+        }
+        .register-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .form-group i {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 15px;
+            color: #999;
+        }
+        .form-control {
+            padding-left: 40px;
+            border-radius: 30px;
+            box-shadow: none;
+            border: 1px solid #ddd;
+        }
+        .btn-primary {
+            background: #003333;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .btn-secondary {
+            background: #003333;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-weight: bold;
+            margin-left: 0px;
+
         }
         .container {
             max-width: 500px;
@@ -46,31 +93,36 @@ if (isset($_SESSION['login'])) {
         }
         .alert {
             margin-top: 20px;
+
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-center mt-3 mb-4">Register Page</h1>
+
+    <div class="register-container">
+        <div class="text-center mb-4">
+            <img src="logo (1).png" alt="Company Logo" class="img-fluid" style="max-width: 200px;">
+        </div>
         <form action="" method="post">
             <div class="form-group">
-                <label for="nameInput">Name</label>
-                <input type="text" class="form-control" id="nameInput" name="name" placeholder="Enter Name" required>
+                <i class="fas fa-user"></i>
+                <input type="text" class="form-control" id="fullNameInput" name="full_name" placeholder="Enter Full Name" required>
             </div>
             <div class="form-group">
-                <label for="emailInput">Email</label>
+                <i class="fas fa-envelope"></i>
                 <input type="email" class="form-control" id="emailInput" name="email" placeholder="Enter Email" required>
             </div>
             <div class="form-group">
-                <label for="passwordInput">Password</label>
+                <i class="fas fa-lock"></i>
                 <input type="password" class="form-control" id="passwordInput" name="password" placeholder="Enter Password" required>
             </div>
-            <button type="submit" class="btn btn-primary">Register</button>
+            <div class="d-flex justify-content-between">    
+                <button type="submit" class="btn btn-primary">Register</button>
+                <a href="login.php" class="btn btn-secondary">Login</a>
+            </div>
         </form>
-        <a href="login.php" class="btn btn-secondary mt-2">Login</a>
         <?php
-        //ganti display error jadi 0 agar tidak muncul notifikasi, ubah jadi 1 agar muncul
-            ini_set('display_errors', '0');
+            ini_set('display_errors', '1');
             ini_set('display_startup_errors', '1');
             error_reporting(E_ALL);
 
