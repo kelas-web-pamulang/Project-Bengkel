@@ -54,6 +54,16 @@
             ini_set('display_startup_errors', '1');
             error_reporting(E_ALL);
 
+            //untuk memasukkan kedlm sentry
+            require 'vendor/autoload.php';
+            \Sentry\init([
+            'dsn' => 'https://0edc357806aff26431f2cc015401142c@o4507428341153792.ingest.us.sentry.io/4507428352032768',
+            // Specify a fixed sample rate
+            'traces_sample_rate' => 1.0,
+            // Set a sampling rate for profiling - this is relative to traces_sample_rate
+            'profiles_sample_rate' => 1.0,
+          ]);
+
             session_start();
             if (isset($_SESSION['login'])) {
                 header('Location: index.php');
@@ -65,6 +75,27 @@
             $db = new ConfigDB();
             $conn = $db->connect();
 
+        //      //error handling*
+        // function checkNum($number) {
+        //     if($number>1) {
+        //       throw new Exception("Value must be 1 or below");
+        //     }
+        //     return true;
+        //   }
+        // function logError($error) {
+        //     error_log($error, 3, 'error.log');
+        //  }
+        //  try {
+        //     echo checkNum(2);	
+        // } catch (Exception $e) {
+        //     logError($e->getMessage());
+        //     echo 'Error : '.$e->getMessage();
+        // }
+            
+        // echo 'Finish';
+
+        //contoh
+        //echo $nama;
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $email = $_POST['email'];
                 $password = $_POST['password'];
