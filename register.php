@@ -69,7 +69,8 @@ if (isset($_SESSION['login'])) {
         </form>
         <a href="login.php" class="btn btn-secondary mt-2">Login</a>
         <?php
-            ini_set('display_errors', '1');
+        //ganti display error jadi 0 agar tidak muncul notifikasi, ubah jadi 1 agar muncul
+            ini_set('display_errors', '0');
             ini_set('display_startup_errors', '1');
             error_reporting(E_ALL);
 

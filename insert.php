@@ -68,7 +68,8 @@ if (!isset($_SESSION['login']) && !isset($_COOKIE['login'])) {
 
 <?php
 date_default_timezone_set('Asia/Jakarta');
-ini_set('display_errors', '1');
+//ganti display error jadi 0 agar tidak muncul notifikasi, ubah jadi 1 agar muncul
+ini_set('display_errors', '0');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 

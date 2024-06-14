@@ -50,7 +50,8 @@
             <button type="submit" class="btn btn-primary mt-3">Login</button>
         </form>
         <?php
-            ini_set('display_errors', '1');
+        //ganti display error jadi 0 agar tidak muncul notifikasi, ubah jadi 1 agar muncul
+            ini_set('display_errors', '0');
             ini_set('display_startup_errors', '1');
             error_reporting(E_ALL);
 
@@ -75,7 +76,7 @@
             $db = new ConfigDB();
             $conn = $db->connect();
 
-        //      //error handling*
+             //error handling*
         // function checkNum($number) {
         //     if($number>1) {
         //       throw new Exception("Value must be 1 or below");
@@ -94,8 +95,9 @@
             
         // echo 'Finish';
 
-        //contoh
-        //echo $nama;
+        // //contoh
+        // echo $nama;
+        
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $email = $_POST['email'];
                 $password = $_POST['password'];
