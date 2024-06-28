@@ -18,7 +18,7 @@ if (!isset($_SESSION['login']) && !isset($_COOKIE['login'])) {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <style>
-            body {
+    body {
         background: url('https://p4.wallpaperbetter.com/wallpaper/791/210/336/window-instrumento-workshop-wallpaper-preview.jpg') no-repeat center center fixed;
         background-size: cover;
         background-color: #2c3e50;
@@ -68,8 +68,7 @@ if (!isset($_SESSION['login']) && !isset($_COOKIE['login'])) {
     <?php
         date_default_timezone_set('Asia/Jakarta');
         require_once 'config_db.php';
-        //ganti display error jadi 0 agar tidak muncul notifikasi, ubah jadi 1 agar muncul
-        ini_set('display_errors', '0');
+        ini_set('display_errors', '1');
         ini_set('display_startup_errors', '1');
         error_reporting(E_ALL);
 
@@ -83,32 +82,11 @@ if (!isset($_SESSION['login']) && !isset($_COOKIE['login'])) {
         'profiles_sample_rate' => 1.0,
         ]);
 
-
         $db = new ConfigDB();
         $conn = $db->connect();
         $result = [];
 
-        //      //error handling*
-        // function checkNum($number) {
-        //     if($number>1) {
-        //       throw new Exception("Value must be 1 or below");
-        //     }
-        //     return true;
-        //   }
-        // function logError($error) {
-        //     error_log($error, 3, 'error.log');
-        //  }
-        //  try {
-        //     echo checkNum(2);	
-        // } catch (Exception $e) {
-        //     logError($e->getMessage());
-        //     echo 'Error : '.$e->getMessage();
-        // }
-            
-        // echo 'Finish';
-
-        //untuk contoh
-        //echo $nama;
+        $error_message = '';
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $conn->begin_transaction();
@@ -117,12 +95,12 @@ if (!isset($_SESSION['login']) && !isset($_COOKIE['login'])) {
                 $name = Trim(Htmlentities($_POST['name']));
                 $price = $_POST['price'];
                 $category = $_POST['id'];
-                $supplier = $_POST['id_supplier']; 
+                $supplier = $_POST['id_supplier'];
                 $stock = $_POST['stock'];
-                $used_stock = $_POST['used_stock']; 
-                $add_stock = $_POST['add_stock']; 
+                $used_stock = $_POST['used_stock'];
+                $add_stock = $_POST['add_stock'];
 
-                // Ambil stock
+                // Ambil stok
                 $query = "SELECT stock FROM products WHERE id = ?";
                 $stmt = $conn->prepare($query);
                 $stmt->bind_param("i", $_GET['id']);
@@ -130,6 +108,11 @@ if (!isset($_SESSION['login']) && !isset($_COOKIE['login'])) {
                 $stmt->bind_result($current_stock);
                 $stmt->fetch();
                 $stmt->close();
+
+                // Periksa stok terpakai
+                if ($used_stock > $current_stock) {
+                    throw new Exception("Stok terjual lebih besar dari stok yang tersedia.");
+                }
 
                 // Hitung stok baru
                 $new_stock = $current_stock;
@@ -156,23 +139,27 @@ if (!isset($_SESSION['login']) && !isset($_COOKIE['login'])) {
                 $result = $db->select("products", ['AND id=' => $_GET['id']]);
             } catch (Exception $e) {
                 $conn->rollback();
-                echo "<div class='alert alert-danger mt-3' role='alert'>Error: " . $e->getMessage() . "</div>";
+                $error_message = $e->getMessage();
             }
         } else {
             $result = $db->select("products", ['AND id=' => $_GET['id']]);
         }
-
     ?>
     <div class="container">
         <h1 class="text-center mt-5">Ubah Data Suku Cadang</h1>
+        <?php
+        if ($error_message) {
+            echo "<div class='alert alert-danger mt-3' role='alert'>Error: " . htmlentities($error_message) . "</div>";
+        }
+        ?>
         <form action="" method="post">
             <div class="form-group">
                 <label for="nameInput">Nama Barang</label>
-                <input type="text" class="form-control" id="nameInput" name="name" placeholder="Enter Name" required value="<?php echo isset($result[0]['name']) ? $result[0]['name'] : '' ?>">
+                <input type="text" class="form-control" id="nameInput" name="name" placeholder="Enter Name" required value="<?php echo isset($_POST['name']) ? htmlentities($_POST['name']) : (isset($result[0]['name']) ? htmlentities($result[0]['name']) : '') ?>">
             </div>
             <div class="form-group">
                 <label for="priceInput">Harga Barang</label>
-                <input type="number" class="form-control" id="priceInput" name="price" placeholder="Enter Price" required value="<?php echo isset($result[0]['price']) ? $result[0]['price'] : '' ?>">
+                <input type="number" class="form-control" id="priceInput" name="price" placeholder="Enter Price" required value="<?php echo isset($_POST['price']) ? htmlentities($_POST['price']) : (isset($result[0]['price']) ? htmlentities($result[0]['price']) : '') ?>">
             </div>
             <div class="form-group">
                 <label for="categorySelect">Kategori</label>
@@ -181,7 +168,7 @@ if (!isset($_SESSION['login']) && !isset($_COOKIE['login'])) {
                     <?php
                         $categories = $conn->query("SELECT id, name FROM categories");
                         while ($row = $categories->fetch_assoc()) {
-                            $selected = ($row['id'] == $result[0]['id_category']) ? 'selected' : '';
+                            $selected = (isset($_POST['id']) && $_POST['id'] == $row['id']) ? 'selected' : ((isset($result[0]['id_category']) && $result[0]['id_category'] == $row['id']) ? 'selected' : '');
                             echo "<option value='{$row['id']}' $selected>{$row['name']}</option>";
                         }
                     ?>
@@ -194,7 +181,7 @@ if (!isset($_SESSION['login']) && !isset($_COOKIE['login'])) {
                     <?php
                         $suppliers = $conn->query("SELECT id_supplier, nama_supplier FROM supplier");
                         while ($row = $suppliers->fetch_assoc()) {
-                            $selected = ($row['id_supplier'] == $result[0]['id_supplier']) ? 'selected' : '';
+                            $selected = (isset($_POST['id_supplier']) && $_POST['id_supplier'] == $row['id_supplier']) ? 'selected' : ((isset($result[0]['id_supplier']) && $result[0]['id_supplier'] == $row['id_supplier']) ? 'selected' : '');
                             echo "<option value='{$row['id_supplier']}' $selected>{$row['nama_supplier']}</option>";
                         }
                     ?>
@@ -202,15 +189,15 @@ if (!isset($_SESSION['login']) && !isset($_COOKIE['login'])) {
             </div>
             <div class="form-group">
                 <label for="stockInput">Stok</label>
-                <input type="number" class="form-control" id="stockInput" name="stock" placeholder="Enter Stock" required readonly value="<?php echo isset($result[0]['stock']) ? $result[0]['stock'] : '' ?>">
+                <input type="number" class="form-control" id="stockInput" name="stock" placeholder="Enter Stock" required readonly value="<?php echo isset($_POST['stock']) ? htmlentities($_POST['stock']) : (isset($result[0]['stock']) ? htmlentities($result[0]['stock']) : '') ?>">
             </div>
             <div class="form-group">
                 <label for="usedStockInput">Stok Terpakai</label>
-                <input type="number" class="form-control" id="usedStockInput" name="used_stock" placeholder="Enter Used Stock">
+                <input type="number" class="form-control" id="usedStockInput" name="used_stock" placeholder="Enter Used Stock" value="<?php echo isset($_POST['used_stock']) ? htmlentities($_POST['used_stock']) : '' ?>">
             </div>
             <div class="form-group">
                 <label for="addStockInput">Tambah Stok</label>
-                <input type="number" class="form-control" id="addStockInput" name="add_stock" placeholder="Enter Jumlah Stock">
+                <input type="number" class="form-control" id="addStockInput" name="add_stock" placeholder="Enter Jumlah Stock" value="<?php echo isset($_POST['add_stock']) ? htmlentities($_POST['add_stock']) : '' ?>">
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
             <a href="index.php" class="btn btn-info">Kembali</a>

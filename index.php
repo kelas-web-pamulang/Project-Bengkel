@@ -170,7 +170,7 @@ if (isset($_GET['logout'])) {
             <table class="table table-striped table-bordered">
                 <thead class="table-dark">
                 <tr>
-                    <th>Id Barang</th>
+                    <th>No</th>
                     <th>Nama Barang</th>
                     <th>Harga Barang</th>
                     <th>Category</th>
@@ -183,18 +183,18 @@ if (isset($_GET['logout'])) {
                 <tbody>
                 <?php
                 date_default_timezone_set('Asia/Jakarta');
-                ini_set('display_errors', '1');
+                ini_set('display_errors', '0');
                 ini_set('display_startup_errors', '1');
                 error_reporting(E_ALL);
                 
                 require 'vendor/autoload.php';
                  \Sentry\init([
-            'dsn' => 'https://0edc357806aff26431f2cc015401142c@o4507428341153792.ingest.us.sentry.io/4507428352032768',
-            // Specify a fixed sample rate
-            'traces_sample_rate' => 1.0,
-            // Set a sampling rate for profiling - this is relative to traces_sample_rate
-            'profiles_sample_rate' => 1.0,
-          ]);
+                'dsn' => 'https://0edc357806aff26431f2cc015401142c@o4507428341153792.ingest.us.sentry.io/4507428352032768',
+                // Specify a fixed sample rate
+                'traces_sample_rate' => 1.0,
+                // Set a sampling rate for profiling - this is relative to traces_sample_rate
+                'profiles_sample_rate' => 1.0,
+                ]);
 
 
                 require_once 'config_db.php';
@@ -241,7 +241,8 @@ if (isset($_GET['logout'])) {
                           FROM products a 
                           LEFT JOIN categories b ON a.id_category = b.id 
                           LEFT JOIN supplier c ON a.id_supplier = c.id_supplier 
-                          WHERE a.deleted_at IS NULL $searchCondition";
+                          WHERE a.deleted_at IS NULL $searchCondition
+                          ORDER BY a.created_at DESC";
 
                 $result = $conn->query($query);
                 $totalRows = $result->num_rows;
